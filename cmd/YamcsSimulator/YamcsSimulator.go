@@ -3,6 +3,7 @@ package main
 import (
 	"acubesat/ops/yamcs-simulator/internal/connection"
 	"acubesat/ops/yamcs-simulator/internal/tc_decoder"
+	"acubesat/ops/yamcs-simulator/internal/tm_responcer"
 	"fmt"
 	"strings"
 	"sync"
@@ -10,6 +11,7 @@ import (
 
 var tcp_wg sync.WaitGroup
 var TC_data = make(chan []byte, 1000)
+var TC_decoded_data = make(chan tc_decoder.TCData, 1000)
 var TM_data = make(chan []byte, 256)
 var Events = make(chan string, 5)
 var connections_list = [9]*connection.TCPClient{}
@@ -49,11 +51,14 @@ func main() {
 	}
 
 	var TM_decoder tc_decoder.TCDecoder = tc_decoder.TCDecoder{Run: true, ExitInWarning: false, Wg: &tcp_wg}
-	TM_decoder.Start(TC_data)
+	TM_decoder.Start(TC_data, TC_decoded_data)
+	var TM_responder tm_responcer.TMResponder = tm_responcer.TMResponder{Run: true, Wg: &tcp_wg}
+	TM_responder.Start(TM_data, TC_decoded_data)
 
 	cli()
 	fmt.Println("Disconnecting...")
 	TM_decoder.Stop()
+	TM_responder.Stop()
 	tcp_wg.Wait()
 	fmt.Println("Done")
 }

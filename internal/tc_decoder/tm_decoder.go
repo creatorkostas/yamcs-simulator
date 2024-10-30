@@ -71,7 +71,7 @@ func DecodeTC(data []byte) (TCData, error) {
 
 }
 
-func (tm_decoder *TCDecoder) Start(channel chan []byte) error {
+func (tm_decoder *TCDecoder) Start(channel chan []byte, decoded_channel chan TCData) error {
 	tm_decoder.Run = true
 	tm_decoder.Wg.Add(1)
 	go func(tm_decoder *TCDecoder) {
@@ -92,9 +92,8 @@ func (tm_decoder *TCDecoder) Start(channel chan []byte) error {
 				}
 			}
 
-			if tm_decoder.Run {
-				fmt.Println("TC:", tm_data.ServiceTypeID, " , ", tm_data.MessageSubtypeID)
-			}
+			decoded_channel <- tm_data
+			fmt.Println("TC:", tm_data.ServiceTypeID, " , ", tm_data.MessageSubtypeID)
 
 		}
 		fmt.Println("Stop TC Decoder")
