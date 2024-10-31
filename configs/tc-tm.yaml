@@ -1,0 +1,6 @@
+commands:
+  - name: TC(17,2)
+    ServiceTypeID: 17
+    MessageSubtypeID: 12
+    TM: 0801c000000a201102000000010f2bd13a
+  

@@ -52,7 +52,7 @@ func main() {
 
 	var TM_decoder tc_decoder.TCDecoder = tc_decoder.TCDecoder{Run: true, ExitInWarning: false, Wg: &tcp_wg}
 	TM_decoder.Start(TC_data, TC_decoded_data)
-	var TM_responder tm_responcer.TMResponder = tm_responcer.TMResponder{Run: true, Wg: &tcp_wg}
+	var TM_responder tm_responcer.TMResponder = tm_responcer.TMResponder{Commands_yaml_path: "../../configs/tc-tm.yaml", Run: true, Wg: &tcp_wg}
 	TM_responder.Start(TM_data, TC_decoded_data)
 
 	cli()
